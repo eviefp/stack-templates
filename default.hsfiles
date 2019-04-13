@@ -28,34 +28,43 @@ default-extensions:
   - ConstraintKinds
   - DataKinds
   - DeriveDataTypeable
-  - DeriveFoldable
-  - DeriveFunctor
   - DeriveGeneric
-  - DeriveTraversable
-  - DuplicateRecordFields
-  - EmptyCase
-  - ExistentialQuantification
+  - EmptyDataDecls
   - FlexibleContexts
   - FlexibleInstances
-  - FunctionalDependencies
   - GADTs
   - GeneralizedNewtypeDeriving
   - InstanceSigs
-  - KindSignatures
-  - LambdaCase
-  - MonoLocalBinds
   - MultiParamTypeClasses
-  - NamedFieldPuns
+  - NoImplicitPrelude
+  - NoMonomorphismRestriction
   - OverloadedStrings
-  - PatternSynonyms
+  - QuasiQuotes
   - RankNTypes
+  - RecordWildCards
   - ScopedTypeVariables
-  - StandaloneDeriving
-  - TypeApplications
+  - TemplateHaskell
+  - TupleSections
   - TypeFamilies
-  - TypeSynonymInstances
-  - UndecidableInstances
+  - TypeOperators
   - ViewPatterns
+
+ghc-options:
+  - -Weverything
+  - -Wno-missing-home-modules # Behavior doesn't make sense
+  - -Wno-redundant-constraints # doesn't play nice with DB or other constraint synonyms
+  - -Wno-missed-specialisations # brings up a lot more than you'd expect. not sure how actionable they are.
+  - -Wno-all-missed-specialisations # see -Wno-missed-specialisations
+  - -Wno-missing-export-lists # obnoxious
+  - -Wno-missing-local-signatures # also obnoxious
+  - -Wno-missing-exported-signatures # missing-exported-signatures turns off the more strict -Wmissing-signatures. See https://ghc.haskell.org/trac/ghc/ticket/14794#ticket
+  - -Wno-missing-import-lists # Requires explicit imports of _every_ function (e.g. '$'); too strict
+  # - -Wno-missed-specialisations # When GHC can't specialize a polymorphic function. No big deal and requires fixing underlying libraries to solve.
+  # - -Wno-all-missed-specialisations # See missed-specialisations
+  - -Wno-unsafe # Don't use Safe Haskell warnings
+  - -Wno-safe # Don't use Safe Haskell warnings
+  - -Wno-missing-local-signatures # Warning for polymorphic local bindings; nothing wrong with those.
+  - -Wno-monomorphism-restriction # Don't warn if the monomorphism restriction is used
 
 library:
   source-dirs: src
@@ -104,22 +113,22 @@ install:
 	$(stack) install
 
 ghci:
-	$(stack) ghci $(package):lib --ghci-options='-j6 +RTS -A128m'
+	$(stack) ghci $(package):lib 
 
 test:
 	$(stack) test $(package)
 
 test-ghci:
-	$(stack) ghci $(package):test:$(package)-tests --ghci-options='-j6 +RTS -A128m'
+	$(stack) ghci $(package):test:$(package)-tests
 
 bench:
 	$(stack) bench $(package)
 
 ghcid:
-	$(stack) exec -- ghcid -c "stack ghci $(package):lib --test --ghci-options='-fobject-code -fno-warn-unused-do-bind -j4 +RTS -A128m' --main-is $(package):$(package)"
+	$(stack) exec -- ghcid -c "stack ghci $(package):lib --test --ghci-options='-fobject-code -fno-warn-unused-do-bind' --main-is $(package):$(package)"
 
 dev-deps:
-	stack install ghcid
+	stack build ghcid
 
 .PHONY : build build-dirty run install ghci test test-ghci ghcid dev-deps
 
@@ -133,8 +142,6 @@ main = putStrLn "Test suite not yet implemented"
 
 {-# START_FILE app/Main.hs #-}
 module Main where
-
-import Lib
 
 main :: IO ()
 main = pure ()
