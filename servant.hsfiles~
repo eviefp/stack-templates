@@ -143,8 +143,6 @@ main = putStrLn "Test suite not yet implemented"
 {-# START_FILE app/Main.hs #-}
 module Main where
 
-import Prelude
-
 main :: IO ()
 main = pure ()
 
@@ -187,7 +185,7 @@ For more information, please refer to <http://unlicense.org/>
 {{name}}.cabal
 *~
 
-{-# START_FILE .stylish-haskell.yaml #-}
+{-# START_FILE .stylish-haskell #-}
 # stylish-haskell configuration file
 # ==================================
 

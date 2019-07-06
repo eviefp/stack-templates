@@ -22,6 +22,9 @@ description:         Please see the README on GitHub at <https://github.com/{{gi
 
 dependencies:
 - base >= 4.7 && < 5
+- servant
+- servant-server
+- warp
 
 default-extensions:
   - BangPatterns
@@ -143,10 +146,39 @@ main = putStrLn "Test suite not yet implemented"
 {-# START_FILE app/Main.hs #-}
 module Main where
 
+import Network.Wai.Handler.Warp
+       ( run )
+import Server
+       ( serverApp )
+
 import Prelude
 
 main :: IO ()
-main = pure ()
+main = do
+  putStrLn "starting server..."
+  run 4000 serverApp
+
+{-# START_FILE src/Server.hs #-}
+module Server where
+
+import Prelude
+import Servant
+       ( (:>), Application, Get, Handler, JSON, Proxy (..), Server, serve )
+
+type ServerAPI =
+  "hello" :> Get '[JSON] String
+
+server :: Server ServerAPI
+server = hello
+  where
+    hello :: Handler String
+    hello = pure "hello world!"
+
+serverAPI :: Proxy ServerAPI
+serverAPI = Proxy
+
+serverApp :: Application
+serverApp = serve serverAPI server
 
 {-# START_FILE README.md #-}
 # {{name}}
